@@ -1,0 +1,23 @@
+global proc AEraycastTemplate( string $nodeName )
+{
+    // the following controls will be in a scrollable layout
+    editorTemplate -beginScrollLayout;
+
+        editorTemplate -beginLayout "Input Properties" -collapse 0;
+            editorTemplate -beginNoOptimize;
+            editorTemplate -addControl "envelope";
+            editorTemplate -addControl "distance";
+            editorTemplate -addControl "falloff";
+            editorTemplate -addControl "useNormal";
+            editorTemplate -endNoOptimize;
+
+        editorTemplate -endLayout;
+
+        // include/call base class/node attributes
+        AEdependNodeTemplate $nodeName;
+
+        // add any extra attributes that have been added
+        editorTemplate -addExtraControls;
+
+    editorTemplate -endScrollLayout;
+}
