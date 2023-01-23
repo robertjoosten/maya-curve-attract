@@ -34,12 +34,14 @@ created by selecting the meshes and running the
 After this the curve needs to be manually connected into the `inputCurve` 
 attribute on the node.
 
+<p align="center"><img src="icons/curve-attract-scene-example.png?raw=true"></p>
+
 The `parameter` ramp is used to generate multiplier values for the parameter
 of the closest point on the curve. This can come in handy to generate a zipper
 effect. The `falloff` ramp is used to generate multiplier values for the 
 falloff allowing for a smoother transition.
 
-<p align="center"><img src="icons/curve-attract-scene-example.png?raw=true"></p>
+<p align="center"><img src="icons/curve-attract-attribute-example.png?raw=true"></p>
 
 As the dot product is used to calculate the distance, smoothing 
 operations are in place to smooth vertices where no displacement is
