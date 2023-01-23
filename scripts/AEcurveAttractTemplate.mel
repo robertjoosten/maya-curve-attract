@@ -9,6 +9,8 @@ global proc AEcurveAttractTemplate( string $nodeName )
             editorTemplate -beginNoOptimize;
             editorTemplate -addControl "distance";
             editorTemplate -addControl "useNormal";
+            editorTemplate -addControl "smoothingStep";
+            editorTemplate -addControl "smoothingIterations";
             AEaddRampControl( $nodeName + ".falloff" );
             AEaddRampControl( $nodeName + ".parameter" );
             editorTemplate -endNoOptimize;
