@@ -1,22 +1,20 @@
-global proc AEraycastTemplate( string $nodeName )
+global proc AEcurveAttractTemplate( string $nodeName )
 {
-    // the following controls will be in a scrollable layout
     editorTemplate -beginScrollLayout;
+        editorTemplate -beginLayout "Curve Attract Attributes" -collapse 0;
+            editorTemplate -callCustom ("AEinputNew \"Input Curve\"")
+                                           ("AEinputReplace \"Input Curve\"")
+                                           "inputCurve";
 
-        editorTemplate -beginLayout "Input Properties" -collapse 0;
             editorTemplate -beginNoOptimize;
-            editorTemplate -addControl "envelope";
             editorTemplate -addControl "distance";
-            editorTemplate -addControl "falloff";
             editorTemplate -addControl "useNormal";
+            AEaddRampControl( $nodeName + ".falloff" );
+            AEaddRampControl( $nodeName + ".parameter" );
             editorTemplate -endNoOptimize;
 
+        AEweightGeometryFilterTemplate $nodeName;
         editorTemplate -endLayout;
-
-        // include/call base class/node attributes
-        AEdependNodeTemplate $nodeName;
-
-        // add any extra attributes that have been added
         editorTemplate -addExtraControls;
 
     editorTemplate -endScrollLayout;

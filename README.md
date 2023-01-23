@@ -1,9 +1,9 @@
 # maya-curve-attract
-Maya curve attract node will pull the vertices of the meshes towards
-the closest point on the curve based on the `distance` and `falloff` 
-attributes. By default, the points are displayed along the normal of
-the vertex but this can be changed to use the vector of the vertex 
-to the closest point on the curve using the `useNormal` attribute. 
+Maya curve attract node will pull the vertices of the meshes towards the 
+closest point on the curve based on the `distance`, `parameter` and `falloff` 
+attributes. By default, the points are displayed along the normal of the 
+vertex but this can be changed to use the vector of the vertex to the closest 
+point on the curve using the `useNormal` attribute. 
 
 ## Installation
 * Extract the content of the .rar file anywhere on disk.
@@ -33,6 +33,11 @@ created by selecting the meshes and running the
 
 After this the curve needs to be manually connected into the `inputCurve` 
 attribute on the node.
+
+The `parameter` ramp is used to generate multiplier values for the parameter
+of the closest point on the curve. This can come in handy to generate a zipper
+effect. The `falloff` ramp is used to generate multiplier values for the 
+falloff allowing for a smoother transition.
 
 <p align="center"><img src="icons/curve-attract-scene-example.png?raw=true"></p>
 

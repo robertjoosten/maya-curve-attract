@@ -38,6 +38,7 @@ public:
 	static MObject aInputCurve;
 	static MObject aDistance;
 	static MObject aFalloffRamp;
+	static MObject aParameterRamp;
 	static MObject aUseNormal;
 	static MObject aSmoothingStep;
 	static MObject aSmoothingIterations;

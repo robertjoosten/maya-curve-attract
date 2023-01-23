@@ -8,6 +8,7 @@ MTypeId CurveAttractNode::id(0x03);
 MObject CurveAttractNode::aInputCurve;
 MObject CurveAttractNode::aDistance;
 MObject CurveAttractNode::aFalloffRamp;
+MObject CurveAttractNode::aParameterRamp;
 MObject CurveAttractNode::aUseNormal;
 MObject CurveAttractNode::aSmoothingStep;
 MObject CurveAttractNode::aSmoothingIterations;
@@ -35,6 +36,9 @@ MStatus CurveAttractNode::initialize() {
 	fnNumericAttr.setReadable(true);
 	fnNumericAttr.setWritable(true);
 	addAttribute(aDistance);
+
+	aParameterRamp = MRampAttribute::createCurveRamp("parameter", "parameter");
+    addAttribute(aParameterRamp);
 
 	aFalloffRamp = MRampAttribute::createCurveRamp("falloff", "falloff");
     addAttribute(aFalloffRamp);
@@ -68,6 +72,7 @@ MStatus CurveAttractNode::initialize() {
 	attributeAffects(aInputCurve, outputGeom);
 	attributeAffects(aDistance, outputGeom);
 	attributeAffects(aFalloffRamp, outputGeom);
+	attributeAffects(aParameterRamp, outputGeom);
 	attributeAffects(aUseNormal, outputGeom);
 	attributeAffects(aSmoothingStep, outputGeom);
 	attributeAffects(aSmoothingIterations, outputGeom);
@@ -113,6 +118,8 @@ void* CurveAttractNode::creator() {
 
 void CurveAttractNode::postConstructor()
 {
+    initializeRamp(thisMObject(), aParameterRamp, 0, 0.0f, 1.0f, 1);
+    initializeRamp(thisMObject(), aParameterRamp, 1, 1.0f, 1.0f, 1);
     initializeRamp(thisMObject(), aFalloffRamp, 0, 0.0f, 0.0f, 2);
     initializeRamp(thisMObject(), aFalloffRamp, 1, 1.0f, 1.0f, 2);
 }
@@ -154,6 +161,9 @@ MStatus CurveAttractNode::deform(MDataBlock& block, MItGeometry& iter, const MMa
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	float distance = dDistance.asFloat();
 
+	MRampAttribute fnParameterRamp(thisMObject(), aParameterRamp, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	MRampAttribute fnFalloffRamp(thisMObject(), aFalloffRamp, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -171,9 +181,12 @@ MStatus CurveAttractNode::deform(MDataBlock& block, MItGeometry& iter, const MMa
 
     int prevIndex;
     float length;
+    float lengthRamp;
     float weightRamp;
     float weightVertex;
-    double param;
+    double parameter;
+    double parameterStart;
+    double parameterEnd;
 
     MIntArray vertices;
     MPointArray points;
@@ -193,6 +206,9 @@ MStatus CurveAttractNode::deform(MDataBlock& block, MItGeometry& iter, const MMa
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MFnNurbsCurve fnInputCurve(oInputCurve, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = fnInputCurve.getKnotDomain(parameterStart, parameterEnd);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // construct a map between vertex index and ordered index, this will most
@@ -221,11 +237,14 @@ MStatus CurveAttractNode::deform(MDataBlock& block, MItGeometry& iter, const MMa
         status = itGeom.getNormal(normal, MSpace::kWorld);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        MPoint pointOnCurve = fnInputCurve.closestPoint(point, &param, 0.0, MSpace::kWorld, &status);
+        MPoint pointOnCurve = fnInputCurve.closestPoint(point, &parameter, 0.0, MSpace::kWorld, &status);
+
+        fnParameterRamp.getValueAtPosition(parameter / parameterEnd, lengthRamp, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MVector vector = (MVector)pointOnCurve - (MVector)point;
         length = vector.length() - distance;
-        length = std::min(1.0f, std::max(0.0f, 1.0f - (length / distance)));
+        length = std::min(1.0f, std::max(0.0f, 1.0f - (length / distance))) * lengthRamp;
 
         fnFalloffRamp.getValueAtPosition(length, weightRamp, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
